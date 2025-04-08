@@ -1,0 +1,23 @@
+@font-face {
+    font-family: 'DejaVuSansMono';
+    src: url('./DejaVuSansMono.woff2');
+}
+
+body {
+    font-family: 'DejaVuSansMono';
+    background-color: blue;
+    overflow: hidden;
+
+}
+
+canvas {
+    background-color: aliceblue;
+    image-rendering: pixelated;
+
+}
+
+#container {
+    position: absolute;
+    width: 1000px;
+    height: 500px;
+}
