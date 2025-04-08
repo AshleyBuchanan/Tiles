@@ -1,26 +1,71 @@
-const canvas = document.querySelector('#gameCanvas');
-const ctx = canvas.getContext('2d');
+class Character {
+    constructor(name, src) {
+        this.frameWidth = 16;
+        this.frameHeight = 24;
+        this.frameCount = 3;
+        this.south = 0;
+        this.north = 3;
+        this.west = 6;
+        this.east = 9;
+        this.flip = false;
+        this.direction = west;
+        this.frameSpeed = 66.67 * 2;
+        this.currentFrame = 0;
+        this.lastFrameTime = 0;
+        this.isMoving = false;
+        this.name = name;
+        this.spriteSheet = new Image();
+        this.spriteSheet.src = src;
+        this.spriteSheet.onload = () => {
+            requestAnimationFrame(animate);
+        };
+    }
+
+    animate(timestamp) {
+        if (isMoving === true) {
+            if (timestamp - lastFrameTime >= frameSpeed) {
+                currentFrame = (currentFrame + 1) % 3;
+                lastFrameTime = timestamp;
+            }
+        } else {
+            currentFrame = 1;
+        }
+
+        ctx.clearRect(0, 0, characterCanvas.width, characterCanvas.height);
+        ctx.save();
+
+        let thisFrame = characterFrame.get(currentFrame + direction);
+
+        if (!thisFrame[2]) {
+            ctx.scale(1, 1);
+            ctx.translate(0, 0);
+        } else {
+            ctx.scale(-1, 1);
+            ctx.translate(-characterCanvas.width - frameWidth, 0);
+        }
+
+        ctx.drawImage(spriteSheet,
+            thisFrame[0] * frameWidth, thisFrame[1] * frameHeight,
+            frameWidth, frameHeight,
+            x, y,
+            frameWidth * 2, frameHeight * 2);
+
+        ctx.restore();
+
+        requestAnimationFrame(animate);
+    }
+}
+
+const characterCanvas = document.querySelector('#characterCanvas');
+const mapCanvas = document.querySelector('#mapCanvas');
+
+let x = characterCanvas.width / 2 - frameWidth / 2;
+let y = characterCanvas.height / 2 - frameHeight / 2;
+const ctx = characterCanvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
-
-const spriteSheet = new Image();
-spriteSheet.src = '/SNES - Final Fantasy 6 T-Edition Hack - Celes Chere.png';
-
-const frameWidth = 16;
-const frameHeight = 24;
-const frameCount = 3;
-const south = 0;
-const north = 3;
-const west = 6;
-const east = 9;
-let flip = false;
-let direction = west;
-const frameSpeed = 66.67 * 2;
-let currentFrame = 0;
-let lastFrameTime = 0;
-let isMoving = false;
-
-let x = canvas.width / 2 - frameWidth / 2;
-let y = canvas.height / 2 - frameHeight / 2;
+const celes = new Character('Celes Chere', '/SNES - Final Fantasy 6 T-Edition Hack - Celes Chere.png');
+// const spriteSheet = new Image();
+// spriteSheet.src = '/SNES - Final Fantasy 6 T-Edition Hack - Celes Chere.png';
 
 const characterFrame = new Map();
 //South
@@ -40,43 +85,49 @@ characterFrame.set(9, [6, 0, true]);
 characterFrame.set(10, [7, 0, true]);
 characterFrame.set(11, [0, 1, true]);
 
-function animate(timestamp) {
-    if (isMoving === true) {
-        if (timestamp - lastFrameTime >= frameSpeed) {
-            currentFrame = (currentFrame + 1) % 3;
-            lastFrameTime = timestamp;
-        }
-    } else {
-        currentFrame = 1;
-    }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+// function animate(timestamp) {
+//     if (isMoving === true) {
+//         if (timestamp - lastFrameTime >= frameSpeed) {
+//             currentFrame = (currentFrame + 1) % 3;
+//             lastFrameTime = timestamp;
+//         }
+//     } else {
+//         currentFrame = 1;
+//     }
 
-    let thisFrame = characterFrame.get(currentFrame + direction);
+//     ctx.clearRect(0, 0, characterCanvas.width, characterCanvas.height);
+//     ctx.save();
 
-    ctx.save();
+//     let thisFrame = characterFrame.get(currentFrame + direction);
 
-    if (!thisFrame[2]) {
-        ctx.scale(1, 1);
-        ctx.translate(0, 0);
-    } else {
-        ctx.scale(-1, 1);
-        ctx.translate(-canvas.width - frameWidth, 0);
-    }
-    ctx.drawImage(spriteSheet,
-        thisFrame[0] * frameWidth, thisFrame[1] * frameHeight,
-        frameWidth, frameHeight,
-        x, y,
-        frameWidth * 2, frameHeight * 2);
+//     if (!thisFrame[2]) {
+//         ctx.scale(1, 1);
+//         ctx.translate(0, 0);
+//     } else {
+//         ctx.scale(-1, 1);
+//         ctx.translate(-characterCanvas.width - frameWidth, 0);
+//     }
 
-    ctx.restore();
+//     ctx.drawImage(spriteSheet,
+//         thisFrame[0] * frameWidth, thisFrame[1] * frameHeight,
+//         frameWidth, frameHeight,
+//         x, y,
+//         frameWidth * 2, frameHeight * 2);
 
-    requestAnimationFrame(animate);
+//     ctx.restore();
 
-}
+//     requestAnimationFrame(animate);
+// }
 
-spriteSheet.onload = () => {
-    requestAnimationFrame(animate);
-};
+
+
+
+
+
+
+// spriteSheet.onload = () => {
+//     requestAnimationFrame(animate);
+// };
 
 window.addEventListener('keydown', (k) => {
     console.log(k.key);
@@ -103,6 +154,19 @@ window.addEventListener('keyup', () => {
 });
 
 window.addEventListener('load', () => {
+    const container = document.querySelector('#container');
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    const marginWidth = (windowWidth - 1000) / 2;
+    container.style.left = `${marginWidth}px`;
+
+    const marginHeight = (windowHeight - 500) / 2;
+    container.style.top = `${marginHeight}px`;
+
+});
+
+window.addEventListener('resize', () => {
     const container = document.querySelector('#container');
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;

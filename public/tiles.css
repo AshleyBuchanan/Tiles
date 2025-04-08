@@ -10,8 +10,18 @@ body {
 
 }
 
-canvas {
-    background-color: aliceblue;
+#characterCanvas {
+    position: absolute;
+    z-index: 10;
+    background-color: none;
+    image-rendering: pixelated;
+
+}
+
+#mapCanvas {
+    position: absolute;
+    z-index: 5;
+    background-color: aquamarine;
     image-rendering: pixelated;
 
 }
