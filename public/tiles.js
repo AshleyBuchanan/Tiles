@@ -91,6 +91,16 @@ class Control {
     selectCharacter(character) {
         this.selected = character;
     }
+    nextCharacter() {
+        const arr = [...this.list];
+        let index = arr.indexOf(this.selected);
+        if (index + 1 === arr.length) {
+            index = 0;
+        } else {
+            index++;
+        }
+        this.selected = arr[index];
+    }
     direction(direction) {
         this.selected.direction = direction;
     }
@@ -101,6 +111,8 @@ class Control {
 
 const control = new Control();
 
+const cyan = new Character('Cyan Garamonde', 'SNES - Final Fantasy 6 T-Edition Hack - Cyan Garamonde.png');
+control.addTo(cyan);
 const celes = new Character('Celes Chere', '/SNES - Final Fantasy 6 T-Edition Hack - Celes Chere.png');
 control.addTo(celes);
 control.selectCharacter(celes);
@@ -131,7 +143,7 @@ window.addEventListener('keyup', () => {
 
 window.addEventListener('keypress', (k) => {
     console.log(k.key);
-
+    if (k.key === '+') control.nextCharacter();
 });
 
 window.addEventListener('load', () => {
