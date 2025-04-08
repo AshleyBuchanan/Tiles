@@ -1,3 +1,7 @@
+const characterCanvas = document.querySelector('#characterCanvas');
+const mapCanvas = document.querySelector('#mapCanvas');
+const ctx = characterCanvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
 class Character {
     constructor(name, src) {
         this.frameWidth = 16;
@@ -8,149 +12,126 @@ class Character {
         this.west = 6;
         this.east = 9;
         this.flip = false;
-        this.direction = west;
+        this.direction = this.west;
         this.frameSpeed = 66.67 * 2;
         this.currentFrame = 0;
         this.lastFrameTime = 0;
         this.isMoving = false;
         this.name = name;
+        this.x = characterCanvas.width / 2 - this.frameWidth / 2;
+        this.y = characterCanvas.height / 2 - this.frameHeight / 2;
         this.spriteSheet = new Image();
         this.spriteSheet.src = src;
         this.spriteSheet.onload = () => {
-            requestAnimationFrame(animate);
+            requestAnimationFrame(this.animate.bind(this));
         };
+
+        this.characterFrame = new Map();
+        //South
+        this.characterFrame.set(0, [0, 0, false]);
+        this.characterFrame.set(1, [1, 0, false]);
+        this.characterFrame.set(2, [2, 0, false]);
+        //North
+        this.characterFrame.set(3, [3, 0, false]);
+        this.characterFrame.set(4, [4, 0, false]);
+        this.characterFrame.set(5, [5, 0, false]);
+        //West
+        this.characterFrame.set(6, [6, 0, false]);
+        this.characterFrame.set(7, [7, 0, false]);
+        this.characterFrame.set(8, [0, 1, false]);
+        //East
+        this.characterFrame.set(9, [6, 0, true]);
+        this.characterFrame.set(10, [7, 0, true]);
+        this.characterFrame.set(11, [0, 1, true]);
     }
 
     animate(timestamp) {
-        if (isMoving === true) {
-            if (timestamp - lastFrameTime >= frameSpeed) {
-                currentFrame = (currentFrame + 1) % 3;
-                lastFrameTime = timestamp;
+        if (this.isMoving) {
+            if (timestamp - this.lastFrameTime >= this.frameSpeed) {
+                this.currentFrame = (this.currentFrame + 1) % 3;
+                this.lastFrameTime = timestamp;
             }
         } else {
-            currentFrame = 1;
+            this.currentFrame = 1;
         }
 
         ctx.clearRect(0, 0, characterCanvas.width, characterCanvas.height);
         ctx.save();
 
-        let thisFrame = characterFrame.get(currentFrame + direction);
+        let thisFrame = this.characterFrame.get(this.currentFrame + this.direction);
 
         if (!thisFrame[2]) {
             ctx.scale(1, 1);
             ctx.translate(0, 0);
         } else {
             ctx.scale(-1, 1);
-            ctx.translate(-characterCanvas.width - frameWidth, 0);
+            ctx.translate(-characterCanvas.width - this.frameWidth, 0);
         }
 
-        ctx.drawImage(spriteSheet,
-            thisFrame[0] * frameWidth, thisFrame[1] * frameHeight,
-            frameWidth, frameHeight,
-            x, y,
-            frameWidth * 2, frameHeight * 2);
+        ctx.drawImage(this.spriteSheet,
+            thisFrame[0] * this.frameWidth, thisFrame[1] * this.frameHeight,
+            this.frameWidth, this.frameHeight,
+            this.x, this.y,
+            this.frameWidth * 2, this.frameHeight * 2);
 
         ctx.restore();
 
-        requestAnimationFrame(animate);
+        requestAnimationFrame(this.animate.bind(this));
     }
 }
 
-const characterCanvas = document.querySelector('#characterCanvas');
-const mapCanvas = document.querySelector('#mapCanvas');
+class Control {
+    constructor() {
+        this.list = new Set();
+        this.selected = null;
+    }
+    addTo(character) {
+        this.list.add(character);
+    }
+    selectCharacter(character) {
+        this.selected = character;
+    }
+    direction(direction) {
+        this.selected.direction = direction;
+    }
+    isMoving(isMoving) {
+        this.selected.isMoving = isMoving;
+    }
+}
 
-let x = characterCanvas.width / 2 - frameWidth / 2;
-let y = characterCanvas.height / 2 - frameHeight / 2;
-const ctx = characterCanvas.getContext('2d');
-ctx.imageSmoothingEnabled = false;
+const control = new Control();
+
 const celes = new Character('Celes Chere', '/SNES - Final Fantasy 6 T-Edition Hack - Celes Chere.png');
-// const spriteSheet = new Image();
-// spriteSheet.src = '/SNES - Final Fantasy 6 T-Edition Hack - Celes Chere.png';
-
-const characterFrame = new Map();
-//South
-characterFrame.set(0, [0, 0, false]);
-characterFrame.set(1, [1, 0, false]);
-characterFrame.set(2, [2, 0, false]);
-//North
-characterFrame.set(3, [3, 0, false]);
-characterFrame.set(4, [4, 0, false]);
-characterFrame.set(5, [5, 0, false]);
-//West
-characterFrame.set(6, [6, 0, false]);
-characterFrame.set(7, [7, 0, false]);
-characterFrame.set(8, [0, 1, false]);
-//East
-characterFrame.set(9, [6, 0, true]);
-characterFrame.set(10, [7, 0, true]);
-characterFrame.set(11, [0, 1, true]);
-
-// function animate(timestamp) {
-//     if (isMoving === true) {
-//         if (timestamp - lastFrameTime >= frameSpeed) {
-//             currentFrame = (currentFrame + 1) % 3;
-//             lastFrameTime = timestamp;
-//         }
-//     } else {
-//         currentFrame = 1;
-//     }
-
-//     ctx.clearRect(0, 0, characterCanvas.width, characterCanvas.height);
-//     ctx.save();
-
-//     let thisFrame = characterFrame.get(currentFrame + direction);
-
-//     if (!thisFrame[2]) {
-//         ctx.scale(1, 1);
-//         ctx.translate(0, 0);
-//     } else {
-//         ctx.scale(-1, 1);
-//         ctx.translate(-characterCanvas.width - frameWidth, 0);
-//     }
-
-//     ctx.drawImage(spriteSheet,
-//         thisFrame[0] * frameWidth, thisFrame[1] * frameHeight,
-//         frameWidth, frameHeight,
-//         x, y,
-//         frameWidth * 2, frameHeight * 2);
-
-//     ctx.restore();
-
-//     requestAnimationFrame(animate);
-// }
-
-
-
-
-
-
-
-// spriteSheet.onload = () => {
-//     requestAnimationFrame(animate);
-// };
+control.addTo(celes);
+control.selectCharacter(celes);
 
 window.addEventListener('keydown', (k) => {
     console.log(k.key);
     if (k.key == 'ArrowDown') {
-        direction = south;
-        isMoving = true;
+        control.direction(celes.south);
+        control.isMoving(true);
     }
     if (k.key == 'ArrowUp') {
-        direction = north;
-        isMoving = true;
+        control.direction(celes.north);
+        control.isMoving(true);
     }
     if (k.key == 'ArrowRight') {
-        direction = east;
-        isMoving = true;
+        control.direction(celes.east);
+        control.isMoving(true);
     }
     if (k.key == 'ArrowLeft') {
-        direction = west;
-        isMoving = true;
+        control.direction(celes.west);
+        control.isMoving(true);
     }
 });
 
 window.addEventListener('keyup', () => {
-    isMoving = false;
+    control.isMoving(false);
+});
+
+window.addEventListener('keypress', (k) => {
+    console.log(k.key);
+
 });
 
 window.addEventListener('load', () => {
