@@ -22,9 +22,6 @@ class Character {
         this.y = characterCanvas.height / 2 - this.frameHeight / 2;
         this.spriteSheet = new Image();
         this.spriteSheet.src = src;
-        this.spriteSheet.onload = () => {
-            requestAnimationFrame(this.animate.bind(this));
-        };
 
         this.characterFrame = new Map();
         //South
@@ -45,6 +42,38 @@ class Character {
         this.characterFrame.set(11, [0, 1, true]);
     }
 
+    updateFrame(timeStamp) {
+        if (this.isMoving) {
+            if (timeStamp - this.lastFrameTime >= this.frameSpeed) {
+                this.currentFrame = (this.currentFrame + 1) % 3;
+                this.lastFrameTime = timeStamp;
+            }
+        } else {
+            this.currentFrame = 1;
+        }
+    }
+
+    draw() {
+        ctx.save();
+
+        let thisFrame = this.characterFrame.get(this.currentFrame + this.direction);
+
+        if (!thisFrame[2]) {
+            ctx.scale(1, 1);
+            ctx.translate(0, 0);
+        } else {
+            ctx.scale(-1, 1);
+            ctx.translate(-characterCanvas.width - this.frameWidth, 0);
+        }
+
+        ctx.drawImage(this.spriteSheet,
+            thisFrame[0] * this.frameWidth, thisFrame[1] * this.frameHeight,
+            this.frameWidth, this.frameHeight,
+            this.x, this.y,
+            this.frameWidth * 2, this.frameHeight * 2);
+
+        ctx.restore();
+    }
     animate(timestamp) {
         if (this.isMoving) {
             if (timestamp - this.lastFrameTime >= this.frameSpeed) {
@@ -80,6 +109,15 @@ class Character {
     }
 }
 
+function mainLoop(timeStamp) {
+    ctx.clearRect(0, 0, characterCanvas.width, characterCanvas.height);
+
+    for (let character of control.list) {
+        character.updateFrame(timeStamp);
+        character.draw();
+    }
+    requestAnimationFrame(mainLoop);
+}
 class Control {
     constructor() {
         this.list = new Set();
@@ -156,6 +194,8 @@ window.addEventListener('load', () => {
 
     const marginHeight = (windowHeight - 500) / 2;
     container.style.top = `${marginHeight}px`;
+
+    mainLoop();
 
 });
 
