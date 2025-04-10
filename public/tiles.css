@@ -18,7 +18,7 @@ body {
 
 }
 
-#mapCanvas {
+#backgroundCanvas {
     position: absolute;
     z-index: 5;
     background-color: aquamarine;
