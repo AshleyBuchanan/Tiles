@@ -7,14 +7,12 @@ body {
     font-family: 'DejaVuSansMono';
     background-color: blue;
     overflow: hidden;
-
 }
 
 #characterCanvas {
     position: absolute;
     z-index: 10;
     background-color: none;
-    image-rendering: pixelated;
 
 }
 
@@ -22,12 +20,10 @@ body {
     position: absolute;
     z-index: 5;
     background-color: aquamarine;
-    image-rendering: pixelated;
-
 }
 
 #container {
     position: absolute;
-    width: 1000px;
-    height: 500px;
+    width: 1500px;
+    height: 843px;
 }
